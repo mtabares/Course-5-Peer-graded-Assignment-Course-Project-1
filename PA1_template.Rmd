@@ -47,11 +47,13 @@ dataAct.RemovedNAs$date <- factor(dataAct.RemovedNAs$date)
 TotalofSteps <- as.data.frame(tapply(dataAct.RemovedNAs$steps, as.factor(dataAct.RemovedNAs$date), sum))
 names(TotalofSteps) <- c("Steps")
 ```
+
 ### 3. If you do not understand the difference between a histogram and a barplot, research the difference between them. Make a histogram of the total number of steps taken each day.
-```{r PA1_template_Step3, echo=TRUE}
+```{r PA1_template_Fig1, echo=TRUE}
 # FIG1
 qplot(TotalofSteps$Steps, geom="histogram", ylab="Number of Days", xlab="Number of Steps", color = "red", binwidth = 1000, main = "Daily Steps")
 ```
+
 ### 4. Calculate the Mean and median number of steps taken each day
 ```{r PA1_template_Step4, echo=TRUE}
 print(mean(TotalofSteps$Steps), row.names = FALSE)
@@ -65,13 +67,18 @@ print(median(TotalofSteps$Steps), row.names = FALSE)
 meanStepsPerInterval <- tapply(dataAct.RemovedNAs$steps, as.factor(dataAct.RemovedNAs$interval), mean)
 meanStepsPerInterval <- as.data.frame(meanStepsPerInterval)
 meanStepsPerInterval$interval <- rownames(meanStepsPerInterval)
+```
+
+```{r PA1_template_Fig2, echo=TRUE}
 # FIG2
 plot(meanStepsPerInterval$interval, meanStepsPerInterval$mean, type = 'l', ylab = "Mean Steps", xlab = "Interval", main = "Average Number of Steps Taken")
 ```
+
 ### 6. The 5-minute interval that, on average, contains the maximum number of steps
 ```{r PA1_template_Step6, echo=TRUE}
 meanStepsPerInterval[meanStepsPerInterval$mean == max(meanStepsPerInterval$mean), ][1]
 ```
+
 ### 7. Code to describe and show a strategy for imputing missing data
 ```{r PA1_template_Step7, echo=TRUE}
 # total number of missing values in the dataset
@@ -86,14 +93,22 @@ dataAct.filledIn$steps[is.na(dataAct.filledIn$steps)] <- dataAct.filledIn$meanSt
 ```{r PA1_template_Step8, echo=TRUE}
 TotalofSteps.filledIn <- as.data.frame(tapply(dataAct.filledIn$steps, as.factor(dataAct.filledIn$date), sum))
 names(TotalofSteps.filledIn) <- c("Steps")
+```
+
+```{r PA1_template_Fig3, echo=TRUE}
 # FIG3
 qplot(TotalofSteps.filledIn$Steps, geom="histogram", ylab="Number of Days", xlab="Number of Steps", binwidth = 1000, main = "StepsbyDay")
+```
+
 ## Calculate the mean and median total number of steps per day:
+```{r PA1_template_print1, echo=TRUE}
 print(mean(TotalofSteps.filledIn$Steps), row.names = FALSE)
 print(median(TotalofSteps.filledIn$Steps), row.names = FALSE)
 ```
+
 ## Are there differences in activity patterns between weekdays and weekends?
 ### 9. Panel plot comparing the average number of steps taken per 5-minute interval across weekdays and weekends
+
 ```{r PA1_template_Step9, echo=TRUE}
 TotalofSteps <- data.table::fread(input = "./data/activity.csv")
 TotalofSteps[, date := as.POSIXct(date, format = "%Y-%m-%d")]
@@ -103,10 +118,14 @@ TotalofSteps[grepl(pattern = "Saturday|Sunday", x = `Day of Week`), "weekday or 
 TotalofSteps[, 'weekday or weekend' := as.factor('weekday or weekend')]
 head(TotalofSteps, 10)
 ```
+
 ## 9. Make a panel plot containing a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). 
 ```{r PA1_template_Step10, echo=TRUE}
 TotalofSteps[is.na(steps), "steps"] <- TotalofSteps[, c(lapply(.SD, median, na.rm = TRUE)), .SDcols = c("steps")]
 IntervalTotalSteps <- TotalofSteps[, c(lapply(.SD, mean, na.rm = TRUE)), .SDcols = c("steps"), by = .(interval, `weekday or weekend`)]
+```
+
+```{r PA1_template_Fig4, echo=TRUE}
 # FIG 4
 ggplot(IntervalTotalSteps , aes(x = interval , y = steps, color=`weekday or weekend`)) + geom_line() + labs(title = "Avg. Daily Steps by Weektype", x = "Interval", y = "No. of Steps") + facet_wrap(~`weekday or weekend` , ncol = 1, nrow=2)
 ```
